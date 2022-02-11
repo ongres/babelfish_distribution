@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        babel: [BABEL_1_0_0, BABEL_1_1_0]
-        engine: [BABEL_1_0_0__PG_13_4, BABEL_1_0_0__PG_13_5]
-        antlr: [4.9.2, 4.9.3]
+        babel: [BABEL_1_0_0]
+        engine: [BABEL_1_0_0__PG_13_4]
+        antlr: [4.9.2]
     steps:
       # - name: Get Release Tag
       #   id: get_tag
@@ -80,7 +80,7 @@ jobs:
           make
           sudo make install
           cp /usr/local/lib/libantlr4-runtime.so.${{ matrix.antlr }} ~/postgres/lib/
-      - name: Set env variables and build extensions
+      - name: Build and install Babelfish ${{ matrix.babel }}
         run: |
           export EXTTAG=${{ matrix.babel }}
           export ENGTAG=${{ matrix.engine }}
