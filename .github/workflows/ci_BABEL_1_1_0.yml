@@ -36,7 +36,6 @@ jobs:
           export EXTDIR=${EXTREPO}-${EXTTAG}
           export ENGDIR=${ENGREPO}-${ENGTAG}
 
-          cd test
           curl -L https://github.com/babelfish-for-postgresql/${EXTREPO}/archive/refs/tags/${EXTTAG}.zip --output ${EXTTAG}.zip
           curl -L https://github.com/babelfish-for-postgresql/${ENGREPO}/archive/refs/tags/${ENGTAG}.zip --output ${ENGTAG}.zip
 
