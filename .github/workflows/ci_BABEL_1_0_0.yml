@@ -53,10 +53,9 @@ jobs:
 
           sudo apt-get update
           sudo apt-get install uuid-dev openjdk-8-jre libicu-dev libxml2-dev openssl libssl-dev python-dev libossp-uuid-dev libpq-dev cmake pkg-config g++ build-essential bison 
-          
-
       - name: Copy ANTLR jar file
         run: |
+          cd ..
           export EXTTAG=${{ matrix.babel }}
           export ENGTAG=${{ matrix.engine }}
 
@@ -66,8 +65,7 @@ jobs:
           export EXTDIR=${EXTREPO}-${EXTTAG}
           export ENGDIR=${ENGREPO}-${ENGTAG}
 
-          cd ${ENGDIR}/contrib/babelfishpg_tsql/antlr/thirdparty/antlr/
-          sudo cp antlr-${{ matrix.antlr }}-complete.jar /usr/local/lib
+          sudo cp ${ENGDIR}/contrib/babelfishpg_tsql/antlr/thirdparty/antlr/antlr-${{ matrix.antlr }}-complete.jar /usr/local/lib
       - name: Compile ANTLR
         run: |
           cd ..
