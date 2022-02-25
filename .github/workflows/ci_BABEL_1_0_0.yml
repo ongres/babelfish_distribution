@@ -26,7 +26,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build base distribution for Babelfish
         run: |
+          unzip  BABEL_1_0_0__PG_13_4.zip  ../babelfishpg 
           cd ..
+
           export EXTTAG=${{ matrix.babel }}
           export ENGTAG=${{ matrix.engine }}
 
@@ -35,21 +37,6 @@ jobs:
 
           export EXTDIR=${EXTREPO}-${EXTTAG}
           export ENGDIR=${ENGREPO}-${ENGTAG}
-
-          curl -L https://github.com/babelfish-for-postgresql/${EXTREPO}/archive/refs/tags/${EXTTAG}.zip --output ${EXTTAG}.zip
-          curl -L https://github.com/babelfish-for-postgresql/${ENGREPO}/archive/refs/tags/${ENGTAG}.zip --output ${ENGTAG}.zip
-
-          unzip ${ENGTAG}.zip
-          unzip ${EXTTAG}.zip
-
-          mv ${EXTDIR}/contrib/* ${EXTDIR}/
-
-          # [[ -d  ${EXTDIR}/contrib && ! -s ${EXTDIR}/contrib ]] && rm -fr ${EXTDIR}/contrib 
-          rm -fr ${EXTDIR}/contrib 
-          mv ${EXTDIR}/** ${ENGDIR}/contrib
-
-          # Extract the Release Notes from the website
-          curl https://raw.githubusercontent.com/babelfish-for-postgresql/babelfish_project_website/a9bbeb3aeb2305914ae802806df21d7b7fbd1ec9/_releases/release_notes_1.0.0.md | sed '/---/,/---/d' > ${ENGDIR}/RELEASE_NOTES.md
 
           sudo apt-get update
           sudo apt-get install uuid-dev openjdk-8-jre libicu-dev libxml2-dev openssl libssl-dev python-dev libossp-uuid-dev libpq-dev cmake pkg-config g++ build-essential bison 
@@ -79,6 +66,7 @@ jobs:
           cp /usr/local/lib/libantlr4-runtime.so.${{ matrix.antlr }} ~/postgres/lib/
       - name: Build and install Babelfish ${{ matrix.babel }}
         run: |
+          export PREFIX=$HOME/postgres/
           export EXTTAG=${{ matrix.babel }}
           export ENGTAG=${{ matrix.engine }}
 
@@ -88,14 +76,13 @@ jobs:
           export EXTDIR=${EXTREPO}-${EXTTAG}
           export ENGDIR=${ENGREPO}-${ENGTAG}
 
-          export PG_CONFIG=~/postgres/bin/pg_config
-          #export PG_SRC=~/work/babelfish_extensions/postgresql_modified_for_babelfish
-          export PG_SRC=~/work/
+          export PG_CONFIG=$HOME/postgres//bin/pg_config
+          export PG_SRC=../babelfishpg
 
           cd ..
           # Engine dir variable ENGDIR is the engine plus all extensions in the Postgres practice.
           cd ${ENGDIR}
-          ./configure --prefix=$HOME/postgres/ --with-python PYTHON=/usr/bin/python2.7 --enable-debug CFLAGS="-ggdb" --with-libxml --with-uuid=ossp --with-icu
+          ./configure --prefix=${PREFIX} --with-python PYTHON=/usr/bin/python2.7 --enable-debug CFLAGS="-ggdb" --with-libxml --with-uuid=ossp --with-icu
           make -j 4 2>error.txt
           make install
           make check
